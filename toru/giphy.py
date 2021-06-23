@@ -9,6 +9,7 @@ _rating = "g"
 
 
 def get_gif(tag: str = "") -> str:
+    tag.replace(" ", "+")
 
     r = requests.get(
         "https://api.giphy.com/v1/gifs/random?api_key=%s&tag=%s&rating=%s"

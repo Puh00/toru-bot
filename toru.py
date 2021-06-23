@@ -39,7 +39,7 @@ async def ping(ctx: Context):
 
 
 @client.command()
-async def gif(ctx: Context, arg: str = ""):
+async def gif(ctx: Context, *, arg: str = ""):
     await ctx.send(get_gif(arg))
 
 
