@@ -1,11 +1,14 @@
-import discord
 import os
+
+from discord.ext.commands.context import Context
 from dotenv import load_dotenv
+
+import discord
+from discord.ext import commands
 
 load_dotenv()
 
-
-client = discord.Client()
+client = commands.Bot(command_prefix="!")
 
 
 @client.event
@@ -22,5 +25,12 @@ async def on_message(message: discord.Message):
     if message.content.startswith("hello"):
         await message.channel.send("hello")
 
+    await client.process_commands(message)
 
-client.run(os.getenv("TOKEN"))
+
+@client.command()
+async def ping(ctx: Context):
+    await ctx.send("pong!")
+
+
+client.run(os.getenv("DISCORD_TOKEN"))
