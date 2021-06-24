@@ -31,7 +31,7 @@ class ToruDb:
 
         # create indices to speed up the queries
         self.users.create_index([("user", pymongo.ASCENDING)], unique=True)
-        self.users.create_index([("servers.server", pymongo.ASCENDING)], unique=True)
+        self.users.create_index([("servers.server", pymongo.ASCENDING)])
 
     def user_exists(self, user_id):
         return self.users.find_one({"user": user_id}) is not None
