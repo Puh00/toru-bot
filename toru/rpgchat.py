@@ -8,6 +8,9 @@ class RpgChat:
 
     def register(self, user, server):
         self.db.update(user, server)
+        
+    def unregister(self, user, server):
+        self.db.remove(user, server)
 
     def chat(self, user, server, msg):
         old_info = self.db.get_chat_info(user, server)
