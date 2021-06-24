@@ -35,7 +35,7 @@ async def ping(ctx: Context):
 
 # Just load every file in cogs directory for the time being
 for file in os.scandir("./cogs"):
-    if file.name.endswith(".py") and file.name != "__init__.py":
+    if file.name.endswith(".py") and file.name != "__init__.py" and file.name != "rpgchat.py":
         print(f"cogs.{file.name[:-3]}")
         client.load_extension(f"cogs.{file.name[:-3]}")
 

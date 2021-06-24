@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 import asyncio
 
 import discord
@@ -7,8 +5,6 @@ import youtube_dl
 
 from discord.ext import commands
 
-
-load_dotenv()
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ""
@@ -25,7 +21,7 @@ ytdl_format_options = {
     "quiet": True,
     "no_warnings": True,
     "default_search": "auto",
-    "source_address": "0.0.0.0",  # bind to ipv4 since ipv6 addresses cause issues sometimes
+    "source_address": "0.0.0.0",
 }
 
 ffmpeg_options = {"options": "-vn"}
@@ -135,19 +131,5 @@ class Music(commands.Cog):
             ctx.voice_client.stop()
 
 
-bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or("!"),
-    description="Relatively simple music bot example",
-)
-
-
-@bot.event
-async def on_ready():
-    print("Logged in as")
-    print(bot.user.name)
-    print(bot.user.id)
-    print("------")
-
-
-bot.add_cog(Music(bot))
-bot.run(os.getenv("DISCORD_TOKEN"))
+def setup(client):
+    client.add_cog(Music(client))
