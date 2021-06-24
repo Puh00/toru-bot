@@ -6,9 +6,6 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 
-from toru.giphy import get_gif, cat_gif
-import toru.magic8ball as m8b
-
 load_dotenv()
 
 client = commands.Bot(command_prefix="!")
@@ -36,19 +33,11 @@ async def ping(ctx: Context):
     await ctx.send("pong!")
 
 
-@client.command()
-async def gif(ctx: Context, *, arg: str = ""):
-    await ctx.send(get_gif(arg))
-
-
-@client.command()
-async def cat(ctx: Context):
-    await ctx.send(cat_gif())
-
-
-@client.command(name='8ball')
-async def ask8ball(ctx: Context, question):
-    await ctx.send(m8b.ask(question))
+# Just load every file in cogs directory for the time being
+for file in os.scandir("./cogs"):
+    if file.name.endswith(".py") and file.name != "__init__.py":
+        print(f"cogs.{file.name[:-3]}")
+        client.load_extension(f"cogs.{file.name[:-3]}")
 
 
 client.run(os.getenv("DISCORD_TOKEN"))
