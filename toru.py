@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 
-import cogs.magic8ball as m8b
-
 load_dotenv()
 
 client = commands.Bot(command_prefix="!")
@@ -35,8 +33,11 @@ async def ping(ctx: Context):
     await ctx.send("pong!")
 
 
-client.load_extension("cogs.giphy")
-client.load_extension("cogs.magic8ball")
+# Just load every file in cogs directory for the time being
+for file in os.scandir("./cogs"):
+    if file.name.endswith(".py") and file.name != "__init__.py":
+        print(f"cogs.{file.name[:-3]}")
+        client.load_extension(f"cogs.{file.name[:-3]}")
 
 
 client.run(os.getenv("DISCORD_TOKEN"))
