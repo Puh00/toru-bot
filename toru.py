@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 
-from toru.giphy import get_gif, cat_gif
-
 load_dotenv()
 
 client = commands.Bot(command_prefix="!")
@@ -35,14 +33,11 @@ async def ping(ctx: Context):
     await ctx.send("pong!")
 
 
-@client.command()
-async def gif(ctx: Context, *, arg: str = ""):
-    await ctx.send(get_gif(arg))
-
-
-@client.command()
-async def cat(ctx: Context):
-    await ctx.send(cat_gif())
+# Just load every file in cogs directory for the time being
+for file in os.scandir("./cogs"):
+    if file.name.endswith(".py") and file.name != "__init__.py":
+        print(f"cogs.{file.name[:-3]}")
+        client.load_extension(f"cogs.{file.name[:-3]}")
 
 
 # move to util class
