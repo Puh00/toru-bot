@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from toru.giphy import get_gif, cat_gif
+import toru.magic8ball as m8b
 
 load_dotenv()
 
@@ -43,6 +44,11 @@ async def gif(ctx: Context, *, arg: str = ""):
 @client.command()
 async def cat(ctx: Context):
     await ctx.send(cat_gif())
+
+
+@client.command(name='8ball')
+async def ask8ball(ctx: Context, question):
+    await ctx.send(m8b.ask(question))
 
 
 client.run(os.getenv("DISCORD_TOKEN"))
