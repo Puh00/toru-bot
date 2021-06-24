@@ -5,15 +5,12 @@ from dotenv import load_dotenv
 
 import discord
 from discord.ext import commands
-import youtube_dl
 
 from toru.giphy import get_gif, cat_gif
 
 load_dotenv()
 
 client = commands.Bot(command_prefix="!")
-
-player = {}
 
 
 @client.event
@@ -46,48 +43,6 @@ async def gif(ctx: Context, *, arg: str = ""):
 @client.command()
 async def cat(ctx: Context):
     await ctx.send(cat_gif())
-
-
-@client.command()
-async def join(ctx: Context):
-    channel = ctx.author.voice.channel
-    if not is_connected(ctx):
-        await channel.connect()
-    else:
-        ctx.send("Already joined a channel la")
-
-
-@client.command()
-async def leave(ctx: Context):
-    if is_connected(ctx):
-        await ctx.voice_client.disconnect()
-    else:
-        ctx.send("Can't leave leave from null bruh")
-
-
-@client.command()
-async def play(ctx: Context, url):
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if not is_connected(ctx):
-        await ctx.send("BAKA MITAI NEE~!")
-
-
-@client.command()
-async def pause(ctx):
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if voice.is_playing():
-        voice.pause()
-    else:
-        await ctx.send("NOT PLAYING")
-
-
-@client.command()
-async def resume(ctx):
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if voice.is_playing():
-        voice.pause()
-    else:
-        await ctx.send("ALREADY PLAYING")
 
 
 # move to util class
