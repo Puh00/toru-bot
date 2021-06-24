@@ -4,6 +4,7 @@ import discord
 import youtube_dl
 
 from discord.ext import commands
+from discord.ext.commands.context import Context
 
 
 # Suppress noise about console usage from errors
@@ -116,6 +117,22 @@ class Music(commands.Cog):
         """Stops and disconnects the bot from voice"""
 
         await ctx.voice_client.disconnect()
+
+    @commands.command(name="pause", help="Pause the song")
+    async def pause(self, ctx: Context):
+        voice_client = ctx.message.guild.voice_client
+        if voice_client.is_playing():
+            voice_client.pause()
+        else:
+            await ctx.send("The bot is not playing anything atm")
+
+    @commands.command(name="resume", help="Resumes the song")
+    async def resume(self, ctx):
+        voice_client = ctx.voice_client
+        if voice_client.is_paused():
+            voice_client.resume()
+        else:
+            await ctx.send("Not playing anything atm or is already playing")
 
     @play.before_invoke
     @yt.before_invoke
