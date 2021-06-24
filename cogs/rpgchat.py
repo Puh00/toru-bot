@@ -42,6 +42,10 @@ class RpgChat(commands.Cog):
         self.register(member.id, member.guild.id)
 
     @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        self.unregister(member.id, member.guild.id)
+
+    @commands.Cog.listener()
     async def on_message(self, message):
         ctx = await self.client.get_context(message)
         if not ctx.valid:
