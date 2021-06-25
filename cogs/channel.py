@@ -17,7 +17,6 @@ class Channel(commands.Cog):
     @purge.error
     async def purge_error(self, ctx, error):
         message = ":x: "
-        print(type(error))
         if isinstance(error, commands.CommandInvokeError):
             cause = error.__cause__
             if isinstance(cause, ValueError):
