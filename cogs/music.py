@@ -75,7 +75,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
             data = data["entries"][0]
 
         await ctx.send(
-            f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=15
+            f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=10
         )
 
         if download:
@@ -288,7 +288,7 @@ class Music(commands.Cog):
                     f"Connecting to channel: <{channel}> timed out."
                 )
 
-        await ctx.send(f"Connected to: **{channel}**", delete_after=20)
+        await ctx.send(f"Connected to: **{channel}**", delete_after=10)
 
     @commands.command(name="play", aliases=["sing"])
     async def play_(self, ctx, *, search: str):
@@ -326,7 +326,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_playing():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=10
             )
         elif vc.is_paused():
             return
@@ -341,7 +341,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=10
             )
         elif not vc.is_paused():
             return
@@ -356,7 +356,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=10
             )
 
         if vc.is_paused():
@@ -374,7 +374,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently connected to voice!", delete_after=20
+                "I am not currently connected to voice!", delete_after=10
             )
 
         player = self.get_player(ctx)
@@ -398,7 +398,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently connected to voice!", delete_after=20
+                "I am not currently connected to voice!", delete_after=10
             )
 
         player = self.get_player(ctx)
@@ -429,7 +429,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently connected to voice!", delete_after=20
+                "I am not currently connected to voice!", delete_after=10
             )
 
         if not 0 < vol < 101:
@@ -454,7 +454,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=10
             )
 
         await self.cleanup(ctx.guild)
