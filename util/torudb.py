@@ -1,4 +1,4 @@
-import pymongo
+from pymongo import MongoClient
 
 """ 
 the intended scheme for the collection 'users'
@@ -23,15 +23,15 @@ the intended scheme for the collection 'users'
 class ToruDb:
     def __init__(self) -> None:
         # connect to the database
-        self.client = pymongo.MongoClient("localhost", 27017)
+        self.client = MongoClient("localhost", 27017, serverSelectionTimeoutMS=500)
         # the database object
         self.db = self.client.toru
         # the connection object
         self.users = self.db.users
 
         # create indices to speed up the queries
-        self.users.create_index([("user", pymongo.ASCENDING)], unique=True)
-        self.users.create_index([("servers.server", pymongo.ASCENDING)], unique=True)
+        self.users.create_index([("user", 1)], unique=True)
+        self.users.create_index([("servers.server", 1)])
 
     def user_exists(self, user_id):
         return self.users.find_one({"user": user_id}) is not None
