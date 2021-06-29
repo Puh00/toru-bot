@@ -40,11 +40,4 @@ for file in os.scandir("./cogs"):
         client.load_extension(f"cogs.{file.name[:-3]}")
 
 
-# move to util class
-# Checks if bot is connected to a voice channel in the given guild
-def is_connected(ctx):
-    voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-    return voice_client and voice_client.is_connected()
-
-
 client.run(os.getenv("DISCORD_TOKEN"))
