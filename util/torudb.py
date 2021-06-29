@@ -1,4 +1,9 @@
+import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
+
+load_dotenv()
+MONGODB_URL = os.getenv("MONGODB_URL")
 
 """ 
 the intended scheme for the collection 'users'
@@ -23,7 +28,13 @@ the intended scheme for the collection 'users'
 class ToruDb:
     def __init__(self) -> None:
         # connect to the database
-        self.client = MongoClient("localhost", 27017, serverSelectionTimeoutMS=500)
+        #self.client = MongoClient("localhost", 27017, serverSelectionTimeoutMS=500)
+        self.client = MongoClient(
+            host="mongodb://mongodb:27017/",
+            serverSelectionTimeOutMS=500,
+        )
+        print(f"SERVER INFO: {self.client.server_info}")
+
         # the database object
         self.db = self.client.toru
         # the connection object
