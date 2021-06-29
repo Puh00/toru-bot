@@ -19,4 +19,4 @@ services:
     links:
       - mongodb
 volumes:
-  toru-db: null
+  toru-db:
