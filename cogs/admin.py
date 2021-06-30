@@ -3,8 +3,10 @@ from discord.ext import tasks
 
 import re
 
+from discord.utils import parse_time
 
-class Channel(commands.Cog):
+
+class Admin(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -41,7 +43,7 @@ class Channel(commands.Cog):
             message += "You don't have the permissions to purge!"
         elif isinstance(error, commands.CommandOnCooldown):
             message += "This command is on cooldown!"
-        
+
         else:
             message += f"Command failed to execute due to: ```\n{error}\n```"
 
@@ -64,4 +66,4 @@ class Channel(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(Channel(client))
+    client.add_cog(Admin(client))
