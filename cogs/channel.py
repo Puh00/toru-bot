@@ -41,7 +41,7 @@ class Channel(commands.Cog):
             message += "You don't have the permissions to purge!"
         elif isinstance(error, commands.CommandOnCooldown):
             message += "This command is on cooldown!"
-        
+
         else:
             message += f"Command failed to execute due to: ```\n{error}\n```"
 
