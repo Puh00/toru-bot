@@ -9,6 +9,7 @@ class Channel(commands.Cog):
         self.client = client
 
     @commands.command()
+    @commands.cooldown(1, 12)
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, *, amount=None):
         if amount != None:
@@ -38,7 +39,9 @@ class Channel(commands.Cog):
         message = ":x: "
         if isinstance(error, commands.MissingPermissions):
             message += "You don't have the permissions to purge!"
-
+        elif isinstance(error, commands.CommandOnCooldown):
+            message += "This command is on cooldown!"
+        
         else:
             message += f"Command failed to execute due to: ```\n{error}\n```"
 
