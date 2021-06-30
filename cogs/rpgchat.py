@@ -52,18 +52,15 @@ class RpgChat(commands.Cog):
     def get_chat_info(self, user, server):
         chat_info = self.db.get_chat_info(user, server)
         if chat_info is None:
-            chat_info = {
-                "chat_exp": 0,
-                "level": 1
-            }
-            
+            chat_info = {"chat_exp": 0, "level": 1}
+
         return chat_info
 
     def get_exp(self, user, server):
         return self.get_chat_info(user, server).get("chat_exp", 0)
 
     def get_level(self, user, server):
-          return self.get_chat_info(user, server).get("level", 1)
+        return self.get_chat_info(user, server).get("level", 1)
 
     @commands.Cog.listener()
     @handle_error
