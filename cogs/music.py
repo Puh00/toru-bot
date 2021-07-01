@@ -262,6 +262,9 @@ class Music(commands.Cog):
 
         Otherwise the member who joins after the bot won't hear the bot's audio
         """
+        if member.bot:
+            return
+
         vc = member.guild.voice_client
         if vc != None and vc.is_playing() and after.channel == vc.channel:
             vc.pause()
