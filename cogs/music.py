@@ -251,6 +251,25 @@ class Music(commands.Cog):
 
         return player
 
+    @commands.Cog.listener()
+    async def on_voice_state_update(
+        self,
+        member: discord.Member,
+        before: discord.VoiceState,
+        after: discord.VoiceState,
+    ):
+        """Restart voice whenever someone joins the bot's voice channel
+
+        Otherwise the member who joins after the bot won't hear the bot's audio
+        """
+        if member.bot:
+            return
+
+        vc = member.guild.voice_client
+        if vc != None and vc.is_playing() and after.channel == vc.channel:
+            vc.pause()
+            vc.resume()
+
     @commands.command(name="connect", aliases=["join"])
     async def connect_(self, ctx, *, channel: discord.VoiceChannel = None):
         """Connect to voice.
