@@ -127,6 +127,26 @@ class Admin(commands.Cog):
 
         await ctx.send(message)
 
+    @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        # whenever a channel has been created, override Muted roles
+        # permissions to speak in the newly created channel
+        muted = discord.utils.get(channel.guild.roles, name="Muted")
+        if not muted:
+            Admin.create_muted_role(channel.guild)
+        else:
+            await channel.set_permissions(
+                muted, speak=False, send_messages=False, read_messages=True
+            )
+
+    async def create_muted_role(guild: discord.Guild):
+        muted = await guild.create_role(name="Muted")
+        # for each channel in the server, mute the member in that channel
+        for ch in guild.channels:
+            await ch.set_permissions(
+                muted, speak=False, send_messages=False, read_messages=True
+            )
+
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: discord.Member, time: str = None, *, reason=None):
@@ -138,9 +158,7 @@ class Admin(commands.Cog):
         muted = discord.utils.get(ctx.guild.roles, name="Muted")
         # create it if the "Muted" role does not exist
         if not muted:
-            # create a new Permissions that can only read messages
-            perms = discord.Permissions(read_messages=True)
-            muted = await ctx.guild.create_role(name="Muted", permissions=perms)
+            await Admin.create_muted_role(ctx.guild)
 
         # we don't mute the same poor guy twice
         if muted in member.roles:
