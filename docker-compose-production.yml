@@ -7,6 +7,8 @@ services:
     volumes:
       - 'toru-db:/data/db'
     command: '--quiet'
+    logging:
+      driver: none
   bot:
     image: 'puh00/toru-bot:latest'
     env_file: ./.env
@@ -15,4 +17,4 @@ services:
     links:
       - mongodb
 volumes:
-  toru-db: null
+  toru-db:
