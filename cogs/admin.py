@@ -10,6 +10,99 @@ class Admin(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    ##### !ban/!kick #####
+
+    # at this point i'm starting to think if
+    # a generic error handling decorator would
+    # be better...
+
+    @commands.command()
+    @commands.has_permissions(kick_members=True)
+    async def kick(self, ctx, member: discord.Member, *, reason):
+        if ctx.author == member:
+            await ctx.send("You can't kick yourself!")
+            return
+
+        await member.kick(reason=reason)
+        await ctx.send(
+            f"{ctx.author.mention} has kicked {member.mention} out of the cool kids clan!"
+        )
+
+    @kick.error
+    async def kick_error(self, ctx, error):
+        message = ":x: "
+        if isinstance(error, commands.MissingPermissions):
+            message += "Your leg is not strong enough to kick!"
+        elif isinstance(error, commands.MemberNotFound):
+            message += "Can't kick someone not in the server!"
+        elif isinstance(error, commands.CommandInvokeError):
+            cause = error.__cause__
+            if isinstance(cause, discord.Forbidden):
+                message += "You cannot kick an admin!"
+
+        else:
+            message += f"Command failed to execute due to: ```\n{error}\n```"
+
+        await ctx.send(message)
+
+    @commands.command()
+    @commands.has_permissions(ban_members=True)
+    async def ban(self, ctx, member: discord.Member, *, reason):
+        if ctx.author == member:
+            await ctx.send("You can't ban yourself!")
+            return
+
+        await member.ban(reason=reason)
+        await ctx.send(f"{ctx.author.mention} just banned {member.mention}'s ass!")
+
+    @ban.error
+    async def ban_error(self, ctx, error):
+        message = ":x: "
+        if isinstance(error, commands.MissingPermissions):
+            message += "You don't have the ban hammer!"
+        elif isinstance(error, commands.MemberNotFound):
+            message += "Can't ban someone not in the server!"
+        elif isinstance(error, commands.CommandInvokeError):
+            cause = error.__cause__
+            if isinstance(cause, discord.Forbidden):
+                message += "You cannot ban an admin!"
+
+        else:
+            message += f"Command failed to execute due to: ```\n{error}\n```"
+
+        await ctx.send(message)
+
+    @commands.command()
+    @commands.has_permissions(ban_members=True)
+    async def unban(self, ctx, user, *, reason):
+        # bans() returns a list of BanEntry
+        _bans = await ctx.guild.bans()
+        # extract the users from all BanEntry
+        banned_users = map(lambda be: be.user, _bans)
+
+        # assuming user is the discord user tag, since you
+        # have no way to mention a banned member
+        name, discriminator = user.split("#")
+        for _user in banned_users:
+            if (name, discriminator) == (_user.name, _user.discriminator):
+                await ctx.guild.unban(_user, reason=reason)
+                await ctx.send(
+                    f"{_user.mention} has now been released from the ban hammer jail by {ctx.author.mention}!"
+                )
+
+        await ctx.send(f"{user.mention} is not found in the secret ban list!")
+
+    @unban.error
+    async def unban_error(self, ctx, error):
+        message = ":x: "
+        if isinstance(error, commands.MissingPermissions):
+            message += "You don't have the power to lift the ban hammer!"
+
+        else:
+            message += f"Command failed to execute due to: ```\n{error}\n```"
+
+        await ctx.send(message)
+
     ##### !mute/!unmute #####
 
     @commands.command()
