@@ -1,5 +1,6 @@
 from random import randint
 import datetime
+import aiohttp
 
 from discord import Message, Embed
 from discord.ext.commands.context import Context
@@ -64,6 +65,30 @@ class Poll(commands.Cog):
             message: Message = await ctx.send(embed=embed)
             for i in range(len(options)):
                 await message.add_reaction(_MULTI_REACTION_EMOJIS[i])
+
+    @commands.command()
+    async def strawpoll(self, ctx: Context, question: str, *options: list[str]):
+        # Convert to list of strings
+        options = list(map(lambda x: "".join(x), options))
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    "https://www.strawpoll.me/api/v2/polls",
+                    json={"title": question, "options": options, "multi": "false"},
+                    headers={"Content-Type": "application/json"},
+                ) as response:
+                    json = await response.json()
+                    print(json)
+                    if "errorCode" in json:
+                        await ctx.send(json["errorMessage"])
+                        return
+
+                    strawpoll_id = json["id"]
+                await ctx.send(f"https://strawpoll.me/{strawpoll_id}")
+        except Exception as e:
+            print(f"ERROR: {e}")
+            return
 
 
 def setup(client):
