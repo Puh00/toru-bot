@@ -4,7 +4,7 @@ pipeline {
         buildDiscarder logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5', daysToKeepStr: '5', numToKeepStr: '5')
     }
     triggers {
-        pollSCM 'H/2 * * * *'
+        pollSCM 'H/10 * * * *'
     }
     environment {
         DISCORD_TOKEN = credentials('discord-token')
