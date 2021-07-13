@@ -12,7 +12,16 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-client = commands.Bot(command_prefix="!")
+# for futrue refactors, this function should have some parameter
+def init_bot():
+    listening = discord.Activity(
+        type=discord.ActivityType.listening,
+        name="soft loli breathing",
+    )
+    return commands.Bot(command_prefix="!", activity=listening)
+
+
+client = init_bot()
 
 
 @client.event
