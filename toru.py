@@ -1,6 +1,5 @@
 import os
 import logging
-from discord import activity
 
 from discord.ext.commands.context import Context
 from dotenv import load_dotenv
