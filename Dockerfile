@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y \
     libnacl-dev \
     python3-dev \
     ffmpeg \
-    && python3 -m pip install -U discord.py[voice] \
+    && python3 -m pip install --no-cache-dir -U discord.py[voice] \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 
