@@ -1,6 +1,7 @@
-from random import randint
+import logging
 import datetime
 import aiohttp
+from random import randint
 
 from discord import Message, Embed
 from discord.ext.commands.context import Context
@@ -79,7 +80,7 @@ class Poll(commands.Cog):
                     headers={"Content-Type": "application/json"},
                 ) as response:
                     json = await response.json()
-                    print(json)
+                    logging.info(f"Received strawpoll response: {json}")
                     if "errorCode" in json:
                         await ctx.send(json["errorMessage"])
                         return
@@ -87,7 +88,7 @@ class Poll(commands.Cog):
                     strawpoll_id = json["id"]
                 await ctx.send(f"https://strawpoll.me/{strawpoll_id}")
         except Exception as e:
-            print(f"ERROR: {e}")
+            logging.error(f"Failed to create a strawpoll: {e}")
             return
 
 

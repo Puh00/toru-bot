@@ -1,4 +1,5 @@
 import os
+import logging
 
 from discord.ext.commands.context import Context
 from dotenv import load_dotenv
@@ -7,23 +8,26 @@ import discord
 from discord.ext import commands
 
 load_dotenv()
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 client = commands.Bot(command_prefix="!")
 
 
 @client.event
 async def on_ready():
-    print(f"Logged in as {client.user}!")
+    logging.info(f"Successfully logged in as '{client.user}'")
 
 
 @client.event
 async def on_message(message: discord.Message):
-    print(f"message from {message.author}: {message.content}")
+    logging.info(
+        f"'{message.author}' sent a message in #{message.channel.name}: '{message.content}'"
+    )
 
     if message.author == client.user:
         return
-    if message.content.startswith("hello"):
-        await message.channel.send("hello")
 
     await client.process_commands(message)
 
@@ -35,8 +39,8 @@ async def ping(ctx: Context):
 
 # Just load every file in cogs directory for the time being
 for file in os.scandir("./cogs"):
-    if file.name.endswith(".py") and file.name != "__init__.py":
-        print(f"cogs.{file.name[:-3]}")
+    if file.name.endswith(".py") and file.name != "__init__.py" and file.name != 'poll.py':
+        logging.info(f"Loading cog module: cogs.{file.name[:-3]}")
         client.load_extension(f"cogs.{file.name[:-3]}")
 
 
