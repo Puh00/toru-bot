@@ -1,4 +1,5 @@
 import os
+import logging
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -32,7 +33,7 @@ class ToruDb:
             host=f"mongodb://{_MONGODB_URL}:27017/",
             serverSelectionTimeOutMS=500,
         )
-        print(f"SERVER INFO: {self.client.server_info}")
+        logging.info(f"Server info: {self.client.server_info}")
 
         # the database object
         self.db = self.client.toru

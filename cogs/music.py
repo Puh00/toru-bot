@@ -9,6 +9,7 @@ from discord.ext import commands
 import asyncio
 import itertools
 import sys
+import logging
 import traceback
 from async_timeout import timeout
 from functools import partial
@@ -236,7 +237,7 @@ class Music(commands.Cog):
                 "Please make sure you are in a valid channel or provide me with one"
             )
 
-        print("Ignoring exception in command {}:".format(ctx.command), file=sys.stderr)
+        logging.warning("Ignoring exception in command {}:".format(ctx.command))
         traceback.print_exception(
             type(error), error, error.__traceback__, file=sys.stderr
         )
