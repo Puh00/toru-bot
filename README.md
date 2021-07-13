@@ -23,10 +23,10 @@
   </a>
 </p>
 
-
 A simple Discord bot that will bring joy to your server!
 
-## Features
+# Features
+
 - Permission system
 - Stream music from Youtube
 - Send gifs
@@ -35,3 +35,20 @@ A simple Discord bot that will bring joy to your server!
 - Dad jokes
 
 ... and much more!
+
+# Usage
+
+## 🐳Runnig with Docker
+
+```bash
+# Clone the repo
+$ git clone https://github.com/Puh00/toru-bot.git
+$ cd toru-bot
+
+# Create the .env file and fill it with your credentials (See .env.example for template)
+$ touch .env
+
+# Compose the containers
+$ docker-compose build
+$ docker-compose up
+```
