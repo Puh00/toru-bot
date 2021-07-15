@@ -8,7 +8,7 @@ other functionalities meant to annoy people with, such as:
 
     * A regex pattern that matches on lines similar to `im bla bla` so
       that you can annoy people with `Hi bla bla, I'm dad`.
-    * A random greeting function to make your like with dad jokes even
+    * A random greeting function to make your life with dad jokes even
       easier.
     * And more if I ever come up with them!
 """
