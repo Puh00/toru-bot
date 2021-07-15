@@ -12,28 +12,42 @@ class Joke(commands.Cog):
         self.client = client
         self.dad_active = False
 
-    @commands.command(name="joke", aliases=["randomjoke"])
+    @commands.command(name="joke", aliases=["randomjoke"], help="Gets a random joke")
     async def _joke(self, ctx: Context):
         await ctx.send(self.get_joke())
 
-    @commands.command(name="pun", aliases=["randompun"])
+    @commands.command(name="pun", aliases=["randompun"], help="Gets a random pun")
     async def _pun(self, ctx: Context):
         await ctx.send(self.get_joke(type="Pun"))
 
-    @commands.command(name="darkjoke")
+    @commands.command(
+        name="darkjoke", help="Gets a random joke, but slightly more African"
+    )
     async def dark_joke(self, ctx: Context):
         await ctx.send(self.get_joke(type="Dark"))
 
-    @commands.command(name="nerdjoke", aliases=["programmerjoke", "programmingjoke"])
+    @commands.command(
+        name="nerdjoke",
+        aliases=["programmerjoke", "programmingjoke"],
+        help="Gets a random joke, but for programmers",
+    )
     async def nerd_joke(self, ctx: Context):
         await ctx.send(self.get_joke(type="Programming"))
 
-    @commands.command(name="dad", aliases=["hi_dad", "activate_dad"])
+    @commands.command(
+        name="dad",
+        aliases=["hi_dad", "activate_dad"],
+        help="Activates the dad functionality, now you will feel like at home",
+    )
     async def _dad(self, ctx: Context):
         self.dad_active = True
         await ctx.send(f"{jh.random_greeting()} {ctx.author.mention}! Dad is here!")
 
-    @commands.command(name="stop_dad", aliases=["stopdad, bye_dad", "no_dad"])
+    @commands.command(
+        name="stop_dad",
+        aliases=["stopdad, bye_dad", "no_dad"],
+        help="Stops the dad functionality, dad will miss you",
+    )
     async def stop_dad(self, ctx: Context):
         self.dad_active = False
         await ctx.send(f"Ok, I will not bother you anymore!")
@@ -43,6 +57,7 @@ class Joke(commands.Cog):
         if message.author == self.client.user:
             return
 
+        # if the search found any matches and the dad function is activated
         if (iam_dict := jh.search_for_iam(message.content)) and self.dad_active:
             await message.channel.send(
                 f"{jh.random_greeting()} **{iam_dict['name']}**, I'm Toru-chan!"
