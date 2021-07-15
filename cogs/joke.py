@@ -1,5 +1,3 @@
-import random
-
 from requests.models import HTTPError
 import util.joke_handler as jh
 
