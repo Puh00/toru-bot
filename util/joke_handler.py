@@ -71,7 +71,7 @@ def joke(type: str = None):
         endpoint += "/Any"
 
     response = requests.get(endpoint)
-    # raise an HTTPError if unsuccessful
+    # raise an requests.models.HTTPError if unsuccessful
     response.raise_for_status()
     # converts the JSON response into a dictionary
     return json.loads(response.text)
