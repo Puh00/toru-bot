@@ -79,8 +79,20 @@ def joke(type: str = None):
     response = requests.get(endpoint)
     # raise an requests.models.HTTPError if unsuccessful
     response.raise_for_status()
+
     # converts the JSON response into a dictionary
-    return json.loads(response.text)
+    joke = json.loads(response.text)
+    if joke["type"] == "twopart":
+        return {
+            "setup": joke["setup"],
+            "delivery": joke["delivery"],
+            "twopart": True,
+        }
+    else:
+        return {
+            "joke": joke["joke"],
+            "twopart": False,
+        }
 
 
 def is_two_part(joke: Dict[str, Union[str, bool]]):
