@@ -63,10 +63,7 @@ class Joke(commands.Cog):
 
     def get_joke(self, type: str = None):
         try:
-            if type:
-                joke = jh.joke(type=type)
-            else:
-                joke = jh.joke()
+            joke = jh.joke(type=type)
 
             if jh.is_two_part(joke):
                 return f"{joke['setup']}\n\n||{joke['delivery']}||"
