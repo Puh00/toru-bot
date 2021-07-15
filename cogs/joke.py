@@ -4,38 +4,48 @@ from requests.models import HTTPError
 import util.joke_handler as jh
 
 from discord.ext import commands
+from discord.ext.commands import Context
 
 
 class Joke(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.dad_active = False
 
     @commands.command(name="joke", aliases=["randomjoke"])
-    async def _joke(self, ctx):
+    async def _joke(self, ctx: Context):
         await ctx.send(self.get_joke())
 
     @commands.command(name="pun", aliases=["randompun"])
-    async def _pun(self, ctx):
+    async def _pun(self, ctx: Context):
         await ctx.send(self.get_joke(type="Pun"))
 
     @commands.command(name="darkjoke")
-    async def dark_joke(self, ctx):
+    async def dark_joke(self, ctx: Context):
         await ctx.send(self.get_joke(type="Dark"))
 
     @commands.command(name="nerdjoke", aliases=["programmerjoke", "programmingjoke"])
-    async def nerd_joke(self, ctx):
+    async def nerd_joke(self, ctx: Context):
         await ctx.send(self.get_joke(type="Programming"))
+
+    @commands.command(name="dad", aliases=["hi_dad", "activate_dad"])
+    async def _dad(self, ctx: Context):
+        self.dad_active = True
+        await ctx.send(f"{jh.random_greeting()} {ctx.author.mention}! Dad is here!")
+
+    @commands.command(name="stop_dad", aliases=["stopdad, bye_dad", "no_dad"])
+    async def stop_dad(self, ctx: Context):
+        self.dad_active = False
+        await ctx.send(f"Ok, I will not bother you anymore!")
 
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.client.user:
             return
 
-        if iam_dict := jh.search_for_iam(message.content):
-            # a predefined set of greetings, probably should refactor it somehow
-            greetings = ["Hi", "Hello", "What's up", "Good day", "How are you doing"]
+        if (iam_dict := jh.search_for_iam(message.content)) and self.dad_active:
             await message.channel.send(
-                f"{random.choice(greetings)} **{iam_dict['name']}**, I'm Toru-chan!"
+                f"{jh.random_greeting()} **{iam_dict['name']}**, I'm Toru-chan!"
             )
 
     def get_joke(self, type: str = None):

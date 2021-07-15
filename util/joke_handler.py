@@ -8,11 +8,14 @@ other functionalities meant to annoy people with, such as:
 
     * A regex pattern that matches on lines similar to `im bla bla` so
       that you can annoy people with `Hi bla bla, I'm dad`.
+    * A random greeting function to make your like with dad jokes even
+      easier.
     * And more if I ever come up with them!
 """
 
 import re
 import json
+import random
 import requests
 from typing import Dict, Union
 
@@ -29,6 +32,9 @@ DAD_PATTERN = re.compile(
     """,
     re.IGNORECASE | re.VERBOSE,
 )
+
+# a predefined set of greetings, this is really scuffed, but will do for now
+GREETINGS = ["Hi", "Hello", "What's up", "Good day", "How are you doing"]
 
 
 def joke(type: str = None):
@@ -111,3 +117,14 @@ def search_for_iam(line: str):
         result = result.groupdict()
 
     return result
+
+
+def random_greeting():
+    """Returns a random greeting
+
+    Returns
+    -------
+    str
+        A random greeting such as `Hello`, `Hi` etc
+    """
+    return random.choice(GREETINGS)
