@@ -37,7 +37,9 @@ client = MongoClient(MONGODB_URL, 27017)
 logging.info(f"Server info: {client.server_info}")
 
 # retrieve/create the database object
-db = client.db
+db = client.toru
+# TODO: this is a temporary measure, remove it next time
+db.drop_collection()
 
 # retrieve/create the primary collection object
 users = db.users
@@ -61,36 +63,57 @@ def get_details(user: int, server: int):
     if not user_has_server(user, server):
         return None
 
-    query = users.find_one({"user": user, "servers.server": server})
+    result = users.find_one({"user": user, "servers.server": server})
 
-    # wtf
-    return list(
-        filter(lambda server: server.get("server") == server, query.get("servers"))
-    )[0]
+    for detail in result["servers"]:
+        if detail["server"] == server:
+            return detail
+        
+    return None
 
 
-# inserts the user into database if the user does not exists,
-# creates a server for the user if the user does not have the server,
-# if chat_info is specified then also update the server info for the user
-def update(user: int, server: int, details: Dict[str, int]):
-    if not user_exists(user):
-        user = {"user": user, "servers": []}
-
-        users.insert_one(user)
-
+def register(user: int, server: int):
     if not user_has_server(user, server):
-        server = {"server": server, "chat_exp": 0, "level": 1}
+        users.find_one_and_update(
+            {"user": user},
+            {
+                "$push": {
+                    "servers": {
+                        "server": server,
+                        "current_exp": 0,
+                        "required_exp": 100,
+                        "level": 1,
+                    }
+                }
+            },
+            upsert=True,
+        )
+        return True
 
-        users.update_one({"user": user}, {"$push": {"servers": server}})
+    return False
 
-    if details is not None:
-        details.setdefault("server", server)
 
+def unregister(user: int, server: int):
+    return (
+        users.update_one(
+            {"user": user}, {"$pull": {"servers": {"server": server}}}
+        ).modified_count
+    ) > 0
+
+
+def update(user: int, server: int, detail: Dict[str, int]):
+    if not (user_has_server(user, server) and validate_detail(detail)):
+        return False
+
+    return (
         users.update_one(
             {"user": user, "servers.server": server},
-            {"$set": {"servers.$": details}},
-        )
+            {"$set": {"servers.$": detail}},
+            upsert=True,
+        ).modified_count
+    ) > 0
 
 
-def remove(user: int, server: int):
-    users.update_one({"user": user}, {"$pull": {"servers": {"server": server}}})
+def validate_detail(detail: Dict[str, int]):
+    detail_keys = {"server", "current_exp", "required_exp", "level"}
+    return detail_keys <= detail.keys()
