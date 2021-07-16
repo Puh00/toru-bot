@@ -43,7 +43,7 @@ class Joke(commands.Cog):
 
     @commands.command(
         name="stop_dad",
-        aliases=["stopdad, bye_dad", "no_dad"],
+        aliases=["stopdad", "bye_dad", "no_dad"],
         help="Stops the dad functionality, dad will miss you",
     )
     async def stop_dad(self, ctx: Context):
