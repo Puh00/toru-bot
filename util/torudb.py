@@ -25,6 +25,7 @@ import os
 import dotenv
 import logging
 import pymongo
+from typing import Dict
 from pymongo import MongoClient
 
 dotenv.load_dotenv()
@@ -48,48 +49,48 @@ users.create_index(
 )
 
 
-def user_exists(user_id):
-    return users.find_one({"user": user_id}) is not None
+def user_exists(user: int):
+    return users.find_one({"user": user}) is not None
 
 
-def user_has_server(user_id, server_id):
-    return users.find_one({"user": user_id, "servers.server": server_id}) is not None
+def user_has_server(user: int, server: int):
+    return users.find_one({"user": user, "servers.server": server}) is not None
 
 
-def get_chat_info(user_id, server_id):
-    if not user_has_server(user_id, server_id):
+def get_details(user: int, server: int):
+    if not user_has_server(user, server):
         return None
 
-    query = users.find_one({"user": user_id, "servers.server": server_id})
+    query = users.find_one({"user": user, "servers.server": server})
 
     # wtf
     return list(
-        filter(lambda server: server.get("server") == server_id, query.get("servers"))
+        filter(lambda server: server.get("server") == server, query.get("servers"))
     )[0]
 
 
 # inserts the user into database if the user does not exists,
 # creates a server for the user if the user does not have the server,
 # if chat_info is specified then also update the server info for the user
-def update(user_id, server_id, chat_info=None):
-    if not user_exists(user_id):
-        user = {"user": user_id, "servers": []}
+def update(user: int, server: int, details: Dict[str, int]):
+    if not user_exists(user):
+        user = {"user": user, "servers": []}
 
         users.insert_one(user)
 
-    if not user_has_server(user_id, server_id):
-        server = {"server": server_id, "chat_exp": 0, "level": 1}
+    if not user_has_server(user, server):
+        server = {"server": server, "chat_exp": 0, "level": 1}
 
-        users.update_one({"user": user_id}, {"$push": {"servers": server}})
+        users.update_one({"user": user}, {"$push": {"servers": server}})
 
-    if chat_info is not None:
-        chat_info.setdefault("server", server_id)
+    if details is not None:
+        details.setdefault("server", server)
 
         users.update_one(
-            {"user": user_id, "servers.server": server_id},
-            {"$set": {"servers.$": chat_info}},
+            {"user": user, "servers.server": server},
+            {"$set": {"servers.$": details}},
         )
 
 
-def remove(user_id, server_id):
-    users.update_one({"user": user_id}, {"$pull": {"servers": {"server": server_id}}})
+def remove(user: int, server: int):
+    users.update_one({"user": user}, {"$pull": {"servers": {"server": server}}})
