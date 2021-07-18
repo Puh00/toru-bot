@@ -15,7 +15,7 @@ def async_ignore_an_error(error_to_ignore: Type[Exception]):
 
     Parameters
     ----------
-    error_to_ignore : BaseException
+    error_to_ignore : Type[Exception]
         The type of the error to be ignored
     """
 
@@ -37,7 +37,7 @@ def ignore_an_error(error_to_ignore: Type[Exception]):
 
     Parameters
     ----------
-    error_to_ignore : BaseException
+    error_to_ignore : Type[Exception]
         The type of the error to be ignored
     """
 
@@ -59,7 +59,7 @@ def async_ignore_multiple_errors(errors_to_ignore: list[Type[Exception]]):
 
     Parameters
     ----------
-    errors_to_ignore : list[Type[BaseException]]
+    errors_to_ignore : list[Type[Exception]]
         The list of error types to ignore
     """
 
@@ -81,7 +81,7 @@ def ignore_multiple_errors(errors_to_ignore: list[Type[Exception]]):
 
     Parameters
     ----------
-    errors_to_ignore : list[Type[BaseException]]
+    errors_to_ignore : list[Type[Exception]]
         The list of error types to ignore
     """
 
