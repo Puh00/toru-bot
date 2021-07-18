@@ -1,4 +1,4 @@
-import torudb as db
+import util.torudb as db
 
 
 class ToruRpg:
