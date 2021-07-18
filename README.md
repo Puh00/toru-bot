@@ -19,7 +19,7 @@
 
 <p align="center">
   <a href="https://hub.docker.com/r/puh00/toru-bot">
-    <img alt="PyPI - Python Version" src="https://dockeri.co/image/puh00/toru-bot">
+    <img alt="PyPI - Python Version" src="https://dockeri.co/image/puh00/toru-bot?">
   </a>
 </p>
 
