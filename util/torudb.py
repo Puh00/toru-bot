@@ -32,7 +32,7 @@ import os
 import dotenv
 import logging
 import pymongo
-from typing import Dict
+from typing import Dict, Union
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
 
@@ -62,7 +62,7 @@ except ServerSelectionTimeoutError:
     pass
 
 
-def user_exists(user: int):
+def user_exists(user: int) -> bool:
     """Checks if a given user exists in the database
 
     Parameters
@@ -78,7 +78,7 @@ def user_exists(user: int):
     return users.find_one({"user": user}) is not None
 
 
-def user_has_server(user: int, server: int):
+def user_has_server(user: int, server: int) -> bool:
     """Checks if a given user is registered on the given server
 
     Parameters
@@ -98,7 +98,7 @@ def user_has_server(user: int, server: int):
     return users.find_one({"user": user, "servers.server": server}) is not None
 
 
-def get_detail(user: int, server: int):
+def get_detail(user: int, server: int) -> Union[dict[str, int], None]:
     """Retrieves the details the given user has on the given server
 
     Parameters
@@ -111,7 +111,7 @@ def get_detail(user: int, server: int):
 
     Returns
     -------
-    Dict[str, int]
+    Union[dict[str, int], None]
         A dictionary representing the detail if the user has the given
         server, else None
     """
@@ -127,7 +127,7 @@ def get_detail(user: int, server: int):
     return None
 
 
-def register(user: int, server: int):
+def register(user: int, server: int) -> bool:
     """Registers a given user on the given server
 
     Parameters
@@ -164,7 +164,7 @@ def register(user: int, server: int):
     return False
 
 
-def unregister(user: int, server: int):
+def unregister(user: int, server: int) -> bool:
     """Unregisters a given user on the given server
 
     Parameters
@@ -188,7 +188,7 @@ def unregister(user: int, server: int):
     ) > 0
 
 
-def update(user: int, server: int, detail: Dict[str, int]):
+def update(user: int, server: int, detail: Dict[str, int]) -> bool:
     """Updates the given user's detail in a server with the given
     details
 
@@ -222,7 +222,7 @@ def update(user: int, server: int, detail: Dict[str, int]):
     ) > 0
 
 
-def validate_detail(detail: Dict[str, int]):
+def validate_detail(detail: Dict[str, int]) -> bool:
     """Validates the given detail
      Parameters
     ----------
