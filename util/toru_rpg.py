@@ -13,18 +13,13 @@ class ToruRpg:
     `ServerSelectionTimeoutError` if the server is too busy or simply
     offline
 
-    Attributes
-    ----------
-    server : int
-        the server id
-
     Methods
     -------
     register(user)
-        Registers the given user in the database
+        Registers the given user in the given server
 
     unregister(user)
-        Unregisters the given user from the database
+        Unregisters the given user from the given server
 
     get_detail(user)
         Retrieves the details (such as exp, level) of the given user
@@ -44,22 +39,15 @@ class ToruRpg:
         Calculates the exp needed for the given level
     """
 
-    def __init__(self, server: int) -> None:
-        """
-        Parameters
-        ----------
-        server: int
-            the server id
-        """
-        self.server = server
-
-    def register(self, user: int) -> bool:
-        """Registers the given user in the database
+    def register(self, user: int, server: int) -> bool:
+        """Registers the given user in the given server
 
         Parameters
         ----------
         user : int
             The unique user id
+        server : int
+            The unique server id
 
         Returns
         -------
@@ -72,15 +60,17 @@ class ToruRpg:
         ServerSelectionTimeoutError
             If the server is too busy or not up
         """
-        return db.register(user, self.server)
+        return db.register(user, server)
 
-    def unregister(self, user: int) -> bool:
-        """Unregisters the given user in the database
+    def unregister(self, user: int, server: int) -> bool:
+        """Unregisters the given user from the given server
 
         Parameters
         ----------
         user : int
             The unique user id
+        server : int
+            The unique server id
 
         Returns
         -------
@@ -93,15 +83,17 @@ class ToruRpg:
         ServerSelectionTimeoutError
             If the server is too busy or not up
         """
-        return db.unregister(user, self.server)
+        return db.unregister(user, server)
 
-    def get_detail(self, user: int) -> dict[str, int]:
+    def get_detail(self, user: int, server: int) -> dict[str, int]:
         """Retrieves the details (such as exp, level) of the given user
 
         Parameters
         ----------
         user : int
             The unique user id
+        server : int
+            The unique server id
 
         Returns
         -------
@@ -115,7 +107,7 @@ class ToruRpg:
                 "required_exp": 420
                 "level": 2
             }
-            
+
         Raises
         ------
         ServerSelectionTimeoutError
@@ -123,12 +115,12 @@ class ToruRpg:
         """
 
         # registers the user if not already done so
-        if not db.user_has_server(user, self.server):
-            db.register(user, self.server)
+        if not db.user_has_server(user, server):
+            db.register(user, server)
 
-        return db.get_detail(user, self.server)
+        return db.get_detail(user, server)
 
-    def get_exp(self, user: int) -> dict[str, int]:
+    def get_exp(self, user: int, server: int) -> dict[str, int]:
         """Retrieves the current exp and required exp of the given user
         in a dictionary
 
@@ -136,6 +128,8 @@ class ToruRpg:
         ----------
         user : int
             The unique user id
+        server : int
+            The unique server id
 
         Returns
         -------
@@ -149,18 +143,20 @@ class ToruRpg:
             If the server is too busy or not up
         """
 
-        detail = self.get_detail(user, self.server)
+        detail = self.get_detail(user, server)
         keys_to_extract = ["current_exp", "required_exp"]
 
         return {key: detail[key] for key in keys_to_extract}
 
-    def get_level(self, user: int) -> int:
-        """Retrieves the level of the given user
+    def get_level(self, user: int, server: int) -> int:
+        """Retrieves the level of the given user has in a server
 
         Parameters
         ----------
         user : int
             The unique user id
+        server : int
+            The unique server id
 
         Returns
         -------
@@ -172,9 +168,9 @@ class ToruRpg:
         ServerSelectionTimeoutError
             If the server is too busy or not up
         """
-        return self.get_detail(user, self.server)["level"]
+        return self.get_detail(user, server)["level"]
 
-    def add_exp(self, user: int, exp: int) -> bool:
+    def add_exp(self, user: int, server: int, exp: int) -> bool:
         """Adds the amount of exp to the user and levels the user up
         accordingly
 
@@ -182,7 +178,8 @@ class ToruRpg:
         ----------
         user : int
             The unique user id
-
+        server : int
+            The unique server id
         exp: int
             The amount of exp to add
 
@@ -197,7 +194,7 @@ class ToruRpg:
             If the server is too busy or not up
         """
 
-        detail = self.get_detail(user)
+        detail = self.get_detail(user, server)
 
         detail["current_exp"] += exp
 
@@ -206,7 +203,7 @@ class ToruRpg:
             detail["current_exp"] = 0
             detail["required_exp"] = self.calc_exp(detail["level"])
 
-        return db.update(user, self.server, detail)
+        return db.update(user, server, detail)
 
     def calc_exp(self, level: int) -> int:
         """Calculates the exp needed for the given level

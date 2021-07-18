@@ -224,7 +224,8 @@ def update(user: int, server: int, detail: Dict[str, int]) -> bool:
 
 def validate_detail(detail: Dict[str, int]) -> bool:
     """Validates the given detail
-     Parameters
+    
+    Parameters
     ----------
     detail : Dict[str, int]
         The detail to be validated
