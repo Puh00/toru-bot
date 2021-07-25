@@ -34,16 +34,22 @@ class RpgChat(commands.Cog):
             )
 
     @commands.command()
-    async def exp(self, ctx: Context):
-        exp = self.handler.get_exp(ctx.author.id, ctx.guild.id)
+    async def exp(self, ctx: Context, member: Member = None):
+        if member is None:
+            member = ctx.author
+
+        exp = self.handler.get_exp(member.id, ctx.guild.id)
         await ctx.send(
-            f"{ctx.author.mention} has: `{exp['current_exp']}/{exp['required_exp']}` xp"
+            f"{member.mention} has: `{exp['current_exp']}/{exp['required_exp']}` xp"
         )
 
     @commands.command()
-    async def level(self, ctx: Context):
-        level = self.handler.get_level(ctx.author.id, ctx.guild.id)
-        await ctx.send(f"{ctx.author.mention}'s level is: `{level}`")
+    async def level(self, ctx: Context, member: Member = None):
+        if member is None:
+            member = ctx.author
+
+        level = self.handler.get_level(member.id, ctx.guild.id)
+        await ctx.send(f"{member.mention}'s level is: `{level}`")
 
     @exp.error
     @level.error
@@ -53,6 +59,9 @@ class RpgChat(commands.Cog):
             cause = error.__cause__
             if isinstance(cause, (ServerSelectionTimeoutError, ConnectionFailure)):
                 message += "The database is currently taking a nap, try again later!"
+        elif isinstance(error, errors.MemberNotFound):
+            message += "I've never seen that person in my life!"
+
         else:
             message += f"Command failed to execute due to: ```\n{error}\n```"
 
