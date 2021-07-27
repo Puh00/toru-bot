@@ -16,7 +16,7 @@ class Admin(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, *, reason):
+    async def kick(self, ctx, member: Member, *, reason):
         if ctx.author == member:
             await ctx.send("You can't kick yourself!")
             return
@@ -45,7 +45,7 @@ class Admin(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason):
+    async def ban(self, ctx, member: Member, *, reason):
         if ctx.author == member:
             await ctx.send("You can't ban yourself!")
             return
@@ -105,7 +105,7 @@ class Admin(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
-    async def unmute(self, ctx, member: discord.Member):
+    async def unmute(self, ctx, member: Member):
         muted = discord.utils.get(ctx.guild.roles, name="Muted")
         if muted not in member.roles:
             await ctx.send(f"{member.display_name} is not muted!")
@@ -137,7 +137,7 @@ class Admin(commands.Cog):
                 muted, speak=False, send_messages=False, read_messages=True
             )
 
-    async def create_muted_role(guild: discord.Guild):
+    async def create_muted_role(guild: Guild):
         muted = await guild.create_role(name="Muted")
         # for each channel in the server, mute the member in that channel
         for ch in guild.channels:
