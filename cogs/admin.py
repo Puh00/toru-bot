@@ -1,9 +1,11 @@
+import re
 import asyncio
 import discord
-from discord.ext import commands
-from discord.ext import tasks
+from discord import Member, Guild
+from discord.ext import commands, tasks
+from discord.ext.commands import Context
 
-import re
+from util.time_parser import TimeParser
 
 
 class Admin(commands.Cog):
@@ -11,10 +13,6 @@ class Admin(commands.Cog):
         self.client = client
 
     ##### !ban/!kick #####
-
-    # at this point i'm starting to think if
-    # a generic error handling decorator would
-    # be better...
 
     @commands.command()
     @commands.has_permissions(kick_members=True)
@@ -147,12 +145,24 @@ class Admin(commands.Cog):
                 muted, speak=False, send_messages=False, read_messages=True
             )
 
-    @commands.command()
+    @commands.command(
+        name="mute",
+        help="Mutes the given member given a time parameter, defaults to 5 minute if not given any",
+    )
     @commands.has_permissions(manage_messages=True)
-    async def mute(self, ctx, member: discord.Member, time: str = None, *, reason=None):
-        # reason for now is shown only in the audit log
-        if reason is None:
-            reason = "No reason given"
+    async def mute(
+        self,
+        ctx: Context,
+        member: Member,
+        time: str = "5m",
+        *,
+        reason: str = "No reason given",
+    ):
+        # try to parse to see if the time is correctly formatted
+        try:
+            tp = TimeParser(time)
+        except ValueError:
+            raise commands.ArgumentParsingError
 
         # look for the role named "Muted"
         muted = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -165,53 +175,28 @@ class Admin(commands.Cog):
             await ctx.send(f"{member.display_name} is already muted!")
             return
 
-        mute_time_sec = 0
-        is_perm_mute = True
-
-        # parse the time is it's specified
-        if time is not None:
-            # parses time into time in seconds
-            try:
-                time = Admin.parse_time(time)
-
-                mute_time_sec = (
-                    time["seconds"]
-                    + time["minutes"] * 60
-                    + time["hours"] * 3600
-                    + time["days"] * 86400
-                )
-
-                if is_perm_mute := (mute_time_sec == 0):
-                    raise ValueError
-            except:
-                raise commands.ArgumentParsingError
+        mute_time = int(tp)
 
         # mute the member
         await member.add_roles(muted, reason=reason)
 
-        if is_perm_mute:
-            # the user is permanently fucked
+        await ctx.send(
+            f"{member.mention} has been muted by {ctx.author.mention} for {str(tp)}!"
+        )
+
+        # simply sleeps this thread until the time is up
+        await asyncio.sleep(mute_time)
+
+        # retrieve the member again to update the cache
+        member = await ctx.guild.fetch_member(member.id)
+
+        # only send a notification if the user is in the server and
+        # has the mute role
+        if member and muted in member.roles:
+            await member.remove_roles(muted)
             await ctx.send(
-                f"{member.mention} has been permanently muted by {ctx.author.mention}!"
+                f"{member.mention} has been successfully released from the mute jail! :tada:"
             )
-        else:
-            await ctx.send(
-                f"{member.mention} has been temporarily muted by {ctx.author.mention} for {Admin.time_to_string(time)}!"
-            )
-
-            # this works suprisingly well
-            await asyncio.sleep(mute_time_sec)
-
-            # retrive the member again to update the cache
-            member = await ctx.guild.fetch_member(member.id)
-
-            # only send a notification if the user is in the server and
-            # has the mute role
-            if member and muted in member.roles:
-                await member.remove_roles(muted)
-                await ctx.send(
-                    f"{member.mention} has been successfully released from the mute jail! :tada:"
-                )
 
     @mute.error
     async def mute_error(self, ctx, error):
@@ -225,84 +210,6 @@ class Admin(commands.Cog):
             message += f"Command failed to execute due to: ```\n{error}\n```"
 
         await ctx.send(message)
-
-    def parse_time(time):
-        """
-        Returns a dict of given time string, in the following form
-          {
-              "seconds": 11,
-              "minutes": 0,
-              "hours": 0,
-              "days": 1
-          }
-
-        Parameters:
-        -----------
-        time: str [Required]
-            Defined as a combination of [number + unit] where the units are
-            limited to s|m|h|d for second, minute, hour and day, the order
-            of the units is irrelevant, but no units should appear more
-            than once, if so, then only the last instance will be parsed
-        """
-
-        # make sure that the whole string is matched
-        mo = re.fullmatch(
-            r"""
-            (?:
-                (?P<seconds>(?:\d)*)s |
-                (?P<minutes>(?:\d)*)m |
-                (?P<hours>(?:\d)*)h   |
-                (?P<days>(?:\d)*)d
-            )+
-            """,
-            time,
-            re.VERBOSE,
-        )
-
-        if not mo:
-            raise ValueError("The given time is invalid!")
-        else:
-            # make sure all values are integers
-            time_dict = {k: int(v) for (k, v) in mo.groupdict(default=0).items()}
-            return time_dict
-
-    def time_to_string(time):
-        """
-        Given a time dict, return a human readable version of the time
-
-        Parameters:
-        -----------
-        time: dict [Required]
-            The dict object obtained by parse a time string using parse_time
-        """
-
-        # adjust the time
-        time["minutes"] += int(time["seconds"] / 60)
-        time["seconds"] = time["seconds"] % 60
-
-        time["hours"] += int(time["minutes"] / 60)
-        time["minutes"] = time["minutes"] % 60
-
-        time["days"] += int(time["hours"] / 24)
-        time["hours"] = time["hours"] % 24
-
-        readable_time = ""
-        # could've used time.keys() but since a dict is unorded,
-        # it must be hard-coded like this to enforce an ordering
-        time_units = ["days", "hours", "minutes", "seconds"]
-        for unit in time_units:
-            if (count := time[unit]) > 0:
-                readable_time += f"{count} {unit} "
-
-        if len(readable_time) == 0:
-            readable_time += "0 seconds"
-
-        # a simple substitution that inserts an "and" if possible
-        return re.sub(
-            r"((?:\d)+ (?:[a-z]){4,}) ((?:\d)+ (?:[a-z]){4,})$",
-            r"\1 and \2",
-            readable_time.strip(),
-        )
 
     ##### !purge #####
 
