@@ -29,7 +29,8 @@ class Translate(commands.Cog):
     @commands.command(
       help="Literal translation"
     )
-    async def translate(self, ctx: Context, source: str, target: str, *text: str):
+    async def translate(self, ctx: Context, source: str, target: str, text: str):
+        print(text)
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -39,11 +40,19 @@ class Translate(commands.Cog):
                 ) as response:
                     json = await response.json()
                     logging.info(f"Received translation: {json}")
+                    if "error" in json:
+                        await ctx.send(json["error"])
+                        return
+
                     translatedText = " ".join(json['translatedText'])
                     await ctx.send(f"\"{translatedText}\"")
         except Exception as e:
             logging.error(f"Failed")
             return
+
+    @translate.error
+    async def translate_handler(self, ctx, error):
+      await ctx.send("Missing required arguments!\nNeeds to follow this format: `!translate {source} {target} \"text to be translated\"`\nReplace `source` and `target` with their code found in `!languages`.", delete_after=60)
 
 
 def setup(client):
