@@ -13,6 +13,7 @@ EXAMPLE_TABLE_DATA = [
 ]
 """
 
+
 def _lengthOfLongestWordInColumn(row: int, data: list[list[str]]) -> int:
     length = -1
     for col in data:
@@ -53,13 +54,14 @@ def _body(wordLengths, data: list[list[str]]) -> str:
     table += _separator(wordLengths)
     return table
 
+
 def generateTable(data: list[list[str]]) -> str:
     wordLengths = []
     # Get length of longest word in each column
     for i in range(len(data[0])):
         wordLengths.append(_lengthOfLongestWordInColumn(i, data))
 
-    table = "\n"+_header(wordLengths, data)
+    table = "\n" + _header(wordLengths, data)
     table += _body(wordLengths, data)
 
     return table

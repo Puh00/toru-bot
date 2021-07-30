@@ -13,9 +13,7 @@ class Translate(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(
-      help="Display list of languages supported for translation"
-    )
+    @commands.command(help="Display list of languages supported for translation")
     async def languages(self, ctx: Context):
         r = requests.get(f"https://libretranslate.de/languages")
         languages = [["Name", "code"]]
@@ -23,12 +21,12 @@ class Translate(commands.Cog):
             languages.append([lang["name"], lang["code"]])
         logging.info(generateTable(languages))
         await ctx.send(
-            embed=Embed(title="Languages", description=f"```{generateTable(languages)}```")
+            embed=Embed(
+                title="Languages", description=f"```{generateTable(languages)}```"
+            )
         )
 
-    @commands.command(
-      help="Literal translation"
-    )
+    @commands.command(help="Literal translation")
     async def translate(self, ctx: Context, source: str, target: str, text: str):
         print(text)
         try:
@@ -44,15 +42,18 @@ class Translate(commands.Cog):
                         await ctx.send(json["error"])
                         return
 
-                    translatedText = " ".join(json['translatedText'])
-                    await ctx.send(f"\"{translatedText}\"")
+                    translatedText = " ".join(json["translatedText"])
+                    await ctx.send(f'"{translatedText}"')
         except Exception as e:
             logging.error(f"Failed")
             return
 
     @translate.error
     async def translate_handler(self, ctx, error):
-      await ctx.send("Missing required arguments!\nNeeds to follow this format: `!translate {source} {target} \"text to be translated\"`\nReplace `source` and `target` with their code found in `!languages`.", delete_after=60)
+        await ctx.send(
+            'Missing required arguments!\nNeeds to follow this format: `!translate {source} {target} "text to be translated"`\nReplace `source` and `target` with their code found in `!languages`.',
+            delete_after=60,
+        )
 
 
 def setup(client):
