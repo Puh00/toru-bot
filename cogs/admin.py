@@ -5,7 +5,6 @@ from discord import Member, Guild
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 
-from util.hacks import stringify_residue_args
 from util.time_parser import TimeParser
 
 
@@ -157,13 +156,19 @@ class Admin(commands.Cog):
         member: Member,
         time: str = "5m",
         *,
-        reason: str = "No reason given",
+        reason: str = None,
     ):
-        # try to parse to see if the time is correctly formatted
         try:
+            # try to parse to see if the time is correctly formatted
             tp = TimeParser(time)
         except ValueError:
-            raise commands.ArgumentParsingError
+            # if not then we assume it's part of the reason, this is scuffed...
+            tp = TimeParser("5m")
+            
+            if reason is None:
+                reason = time
+            else:
+                reason = f"{time} {reason}"
 
         # look for the role named "Muted"
         muted = discord.utils.get(ctx.guild.roles, name="Muted")
