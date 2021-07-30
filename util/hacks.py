@@ -16,7 +16,7 @@ def stringify_residue_args(
         The dictionary obtained by calling locals() inside a function,
         the * and ** args should be named as *args and **kwargs for it
         to work properly.
-        
+
         Note that whatever objects in the *args and **kwargs must be
         have implemented the __str__ methods.
 

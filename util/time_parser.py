@@ -1,5 +1,6 @@
 import re
 
+
 class TimeParser:
     """
     A class that provides useful methods used to parse a simple time
@@ -27,10 +28,10 @@ class TimeParser:
     -------
     to_seconds()
         Returns the time given in seconds
-        
+
     to_string()
         Returns the time given in a human-readable way
-    
+
     static parse_time(time)
         Parses the given time string
     """

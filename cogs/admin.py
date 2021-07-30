@@ -165,7 +165,7 @@ class Admin(commands.Cog):
         except ValueError:
             # if not then we assume it's part of the reason, this is scuffed...
             tp = TimeParser("5m")
-            
+
             if reason is None:
                 reason = time
             else:
