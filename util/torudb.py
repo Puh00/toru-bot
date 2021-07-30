@@ -59,7 +59,7 @@ try:
         unique=True,
     )
 except ServerSelectionTimeoutError:
-    pass
+    logging.error("Failed to connect to the database!")
 
 
 def user_exists(user: int) -> bool:
