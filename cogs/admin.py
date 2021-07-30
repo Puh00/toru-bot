@@ -87,6 +87,7 @@ class Admin(commands.Cog):
                 await ctx.send(
                     f"{_user.mention} has now been released from the ban hammer jail by {ctx.author.mention}!"
                 )
+                return
 
         await ctx.send(f"{user.mention} is not found in the secret ban list!")
 
