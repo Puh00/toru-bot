@@ -5,6 +5,7 @@ from discord import Member, Guild
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 
+from util.hacks import stringify_residue_args
 from util.time_parser import TimeParser
 
 
