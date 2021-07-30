@@ -45,13 +45,18 @@ class Translate(commands.Cog):
                     translatedText = " ".join(json["translatedText"])
                     await ctx.send(f'"{translatedText}"')
         except Exception as e:
-            logging.error(f"Failed")
+            logging.error(f"Failed to translate: {e}")
             return
 
     @translate.error
     async def translate_handler(self, ctx, error):
+        message = ":x: "
+        if isinstance(error, commands.MissingRequiredArgument):
+            message += 'Missing required arguments!\nNeeds to follow this format: `!translate {source} {target} "text to be translated"`\nReplace `source` and `target` with their code found in `!languages`.'
+        else:
+            message += f"Command failed to execute due to: ```\n{error}\n```"
         await ctx.send(
-            'Missing required arguments!\nNeeds to follow this format: `!translate {source} {target} "text to be translated"`\nReplace `source` and `target` with their code found in `!languages`.',
+            message,
             delete_after=60,
         )
 
